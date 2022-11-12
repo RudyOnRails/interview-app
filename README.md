@@ -21,7 +21,7 @@ You need:
 With those things in place, run:
 
 ```sh
-git clone git@github.com:fabricut/interview-app.git
+# clone your forked repo, then...
 cd interview-app
 bundle
 
