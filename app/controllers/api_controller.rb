@@ -5,9 +5,6 @@ class ApiController < ApplicationController
     # In the real world this call takes a second or two.
     sleep 1
 
-    account = current_account
-    raise "Account was not found" if account.blank?
-
     product = Product.find(params[:sku])
 
     output = {
