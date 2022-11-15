@@ -2,63 +2,10 @@
 
 class ApiController < ApplicationController
   def stock_and_pricing
+    byebug
     # In the real world this call takes a second or two.
     sleep 1
 
-    output = {
-      pricing: {
-        retail: {
-          base: {
-            usd: product.base_price__retail(:usd, :unit, :single),
-            cad: product.base_price__retail(:cad, :unit, :single)
-          },
-          markup: {
-            usd: product.retail_price(account: @account, currency: :usd, unit: :unit, type: :single),
-            cad: product.retail_price(account: @account, currency: :cad, unit: :unit, type: :single)
-          },
-          customer: {
-            usd: product.your_price_retail(@account, :usd, :unit),
-            cad: product.your_price_retail(@account, :cad, :unit)
-          }
-        },
-        net: {
-          base: {
-            usd: product.base_price__net(:usd, :unit, :single),
-            cad: product.base_price__net(:cad, :unit, :single)
-          },
-          account_cost: {
-            usd: product.your_price_net(@account, :usd, :unit),
-            cad: product.your_price_net(@account, :cad, :unit)
-          },
-          piece: {
-            usd: product.your_price_net(@account, :usd, :piece),
-            cad: product.your_price_net(@account, :cad, :piece)
-          },
-          halfpiece: {
-            usd: product.your_price_net(@account, :usd, :halfpiece),
-            cad: product.your_price_net(@account, :cad, :halfpiece)
-          },
-          customer: {
-            unit: product.order_price__net(current_user, :unit),
-            piece: product.order_price__net(current_user, :piece),
-            halfpiece: product.order_price__net(current_user, :halfpiece)
-          }
-        }
-      },
-      stock: product.stock(current_user)&.merge(unit: product.measured_unit)
-    }
-
-    output[:uom_display_text] = product.measured_unit["uom_display_text"] if product.measured_unit["uom_display_text"].present?
-
-    if product.wallcovering?
-      output[:measured_unit] = product.measured_unit["long"]["singular"].downcase
-      output[:order_increment] = product.wallcovering_data.average_bolt.to_f
-    end
-
-    output[:pricing].delete(:net) unless current_user.has_role?(:view_net_pricing_usd) || current_user.has_role?(:view_net_pricing_cad)
-    output.delete(:stock) unless current_user.has_role?(:view_stock)
-
-    @product = product
     @stock_output = output[:stock].deep_symbolize_keys
 
     @stock_total = @stock_output[:current][:total]
